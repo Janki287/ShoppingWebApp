@@ -8,7 +8,7 @@ import ShopPage from './pages/shop/shop-page.component.jsx';
 import Header from './components/header/header.component';
 import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
 
-import { auth } from './firebase/firebase.utils';
+import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 
 class App extends React.Component {
   constructor(props){
@@ -22,12 +22,31 @@ class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount(){
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(user => {
-      this.setState({
-        currentUser: user
-      })
-      console.log(user);
-    })
+    this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
+      //userAuth is object which we are getting from firebase auth(google authentication)
+
+      if(userAuth){
+        //if user sign in then we are setting currentUser with the database(USERS) data
+        const userRef = await createUserProfileDocument(userAuth);
+        userRef.onSnapshot((snapShot) => {
+          this.setState({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data() //snapShot.data() has displayName,email and createdAt properties from databae USERS
+            }
+          });
+
+          console.log(this.state);
+        });
+      }else{
+        //if user logged out then userAuth is null,so we are setting the currentUser to null
+
+        this.setState({
+          currentUser: userAuth
+        })
+      }
+
+    });
   }
 
   componentWillUnmount(){

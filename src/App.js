@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 
-import { Route,Switch } from 'react-router-dom';
+import { Route,Switch,Redirect } from 'react-router-dom';
 
 import HomePage from './pages/homepage/homepage.component.jsx';
 import ShopPage from './pages/shop/shop-page.component.jsx';
@@ -56,7 +56,7 @@ class App extends React.Component {
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route path='/shop' component={ShopPage} />
-          <Route path='/signin' component={SignInAndSignUpPage} />
+          <Route exact path='/signin' render={() => this.props.currentUser ? (<Redirect to='/' />) : (<SignInAndSignUpPage />)} />
         </Switch>
       </div>
     );
@@ -71,8 +71,18 @@ const mapDispatchToProps = (dispatch) => ({
 });
 //using mapDispatchToProps we are setting the currentUser into redux(same as this.setState)
 
-export default connect(null,mapDispatchToProps)(App);
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser
+});
+//const mapStateToProps = ({user}) => ({currentUser: user.currentUser}); alternative of the above mapStateToProps
+//mapStateToProps we are using this to redirect to home page(/) after user sign in
+
+//to set the props: mapDispatchToProps
+//to use the set props: mapStateToProps
+
+export default connect(mapStateToProps,mapDispatchToProps)(App);
 //by only using the <Route>, page will render more than one component on same page if more than one path matches
 //by using <Switch>, page will render only one component of matching path
 
 //auth.onAuthStateChanged is a open subscription method, so we have to close this open connection by doing this.unsubscribeFromAuth();
+//render from ract-router takes a function as a parameter

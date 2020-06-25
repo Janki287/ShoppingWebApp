@@ -13,6 +13,10 @@ import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 import {connect} from 'react-redux';
 import {setCurrentUser} from './redux/user/user.action';
 
+import {selectCurrentUser} from './redux/user/user.selectors';
+
+import {createStructuredSelector} from 'reselect';
+
 class App extends React.Component {
 
   unsubscribeFromAuth = null;
@@ -71,11 +75,16 @@ const mapDispatchToProps = (dispatch) => ({
 });
 //using mapDispatchToProps we are setting the currentUser into redux(same as this.setState)
 
-const mapStateToProps = (state) => ({
-  currentUser: state.user.currentUser
+const mapStateToProps = createStructuredSelector ({
+  currentUser: selectCurrentUser
 });
-//const mapStateToProps = ({user}) => ({currentUser: user.currentUser}); alternative of the above mapStateToProps
-//mapStateToProps we are using this to redirect to home page(/) after user sign in
+//the below is alternative of above code ( in below code without using the reselect library)
+
+//const mapStateToProps = (state) => ({
+  //currentUser: state.user.currentUser
+//});
+////const mapStateToProps = ({user}) => ({currentUser: user.currentUser}); alternative of the above mapStateToProps
+////mapStateToProps we are using this to redirect to home page(/) after user sign in
 
 //to set the props: mapDispatchToProps
 //to use the set props: mapStateToProps

@@ -4,11 +4,14 @@ import './header.styles.scss';
 import { Link } from 'react-router-dom';
 import { ReactComponent as Logo } from '../../assests/crown.svg';
 import { auth } from '../../firebase/firebase.utils';
+import CartIcon from '../cart-icon/cart-icon.component';
+import CartDropdown from '../cart-dropdown/cart-dropdown.component';
 
 import {connect} from 'react-redux';
 
-const Header = ( { currentUser } ) => (
-    //this currentUser if from mapStateToProps(left side)
+const Header = ( { currentUser,hidden } ) => (
+    //this currentUser is from mapStateToProps(left side)
+    //this hidden is from mapStateToProps(left side)
     <div className='header'>
         <Link to='/' className='logo-container'>
             <Logo className='logo' />
@@ -30,7 +33,11 @@ const Header = ( { currentUser } ) => (
                     SIGN IN
                 </Link>
             }
+            <CartIcon />
         </div>
+        {
+            hidden ? null : < CartDropdown />
+        }
     </div>
 )
 
@@ -38,10 +45,16 @@ const mapStateToProps = (state) => ({
     //state is root-reducer
     //state.user is user key from root-reducer file,which will give the userReducer
     //state.user.currentUser will give currentUser from userReducer file
-    currentUser: state.user.currentUser
+    currentUser: state.user.currentUser,
     //currentUser on left side is a props that we are pass into this header component
+
+    hidden: state.cart.hidden
+    //here we are using hidden props(set from the mapDispatchToProps) to show the <CartDropdown /> component
 });
 //mapStateToProps is used to get the props(payload) from redux that are set using mapDispatchToProps
+
+//const mapStateToProps = ( { user: {currentUser}, cart: {hidden} } ) => ({ currentUser,hidden })
+//alternative of the above  mapStateToProps
 
 export default connect(mapStateToProps)(Header);
 

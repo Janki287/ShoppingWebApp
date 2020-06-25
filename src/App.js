@@ -10,14 +10,10 @@ import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up
 
 import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 
-class App extends React.Component {
-  constructor(props){
-    super(props);
+import {connect} from 'react-redux';
+import {setCurrentUser} from './redux/user/user.action';
 
-    this.state = {
-      currentUser: null
-    }
-  }
+class App extends React.Component {
 
   unsubscribeFromAuth = null;
 
@@ -25,11 +21,13 @@ class App extends React.Component {
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
       //userAuth is object which we are getting from firebase auth(google authentication)
 
+      const {setCurrentUser} = this.props;
+      //this setCurrentUser is from mapDispatchToProps (left side)
       if(userAuth){
         //if user sign in then we are setting currentUser with the database(USERS) data
         const userRef = await createUserProfileDocument(userAuth);
         userRef.onSnapshot((snapShot) => {
-          this.setState({
+          setCurrentUser({
             currentUser: {
               id: snapShot.id,
               ...snapShot.data() //snapShot.data() has displayName,email and createdAt properties from databae USERS
@@ -41,9 +39,7 @@ class App extends React.Component {
       }else{
         //if user logged out then userAuth is null,so we are setting the currentUser to null
 
-        this.setState({
-          currentUser: userAuth
-        })
+        setCurrentUser(userAuth);
       }
 
     });
@@ -56,7 +52,7 @@ class App extends React.Component {
   render(){
     return (
       <div>
-        <Header currentUser={this.state.currentUser} />
+        <Header />
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route path='/shop' component={ShopPage} />
@@ -67,7 +63,15 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: user => dispatch(setCurrentUser(user))
+  //setCurrentUser left side is a props name that we are using in this file
+  //actually it is a function which take user as a parameter and pass it to the setCurrentUser(user) in user.action.js file
+  //setCurrentUser right side is a function from user.action.js,in which we are passing our user
+});
+//using mapDispatchToProps we are setting the currentUser into redux(same as this.setState)
+
+export default connect(null,mapDispatchToProps)(App);
 //by only using the <Route>, page will render more than one component on same page if more than one path matches
 //by using <Switch>, page will render only one component of matching path
 

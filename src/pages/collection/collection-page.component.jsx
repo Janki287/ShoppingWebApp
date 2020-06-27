@@ -1,23 +1,31 @@
-import React from 'react';
-import './collection-page.styles.scss';
+import React from "react";
+import "./collection-page.styles.scss";
+import CollectionItem from '../../components/collection-item/collection-item.component';
 
-import {connect} from 'react-redux';
+import { connect } from "react-redux";
 
-import {selectCollectionFromUrl} from '../../redux/shop/shop.selectors';
+import { selectCollectionFromUrl } from "../../redux/shop/shop.selectors";
 
-const CollectionPage = ( { collection } ) => (
-    //collection from mapStateToProps(left side)
+const CollectionPage = ({ collection }) => {
+  //collection from mapStateToProps(left side)
 
-    <div className='collection-page'>
-        COLLECTION PAGE
+  const { title, items } = collection;
+  return (
+    <div className="collection-page">
+      <span className="title">{title}</span>
+      <div className="items">
         {
-            console.log(collection)
+            items.map((item) => <CollectionItem key={item.id} item={item} />)
         }
+      </div>
     </div>
-);
+  );
+};
 
-const mapStateToProps = (state,ownProps) => ({
-    collection: selectCollectionFromUrl(ownProps.match.params.collectionId)(state)
+const mapStateToProps = (state, ownProps) => ({
+  collection: selectCollectionFromUrl(ownProps.match.params.collectionId)(
+    state
+  ),
 });
 //ownProps has a property that are not from redux-store but from the other components
 //example: in shop-page component from <Route />, we get the match props into this CollectionPage component

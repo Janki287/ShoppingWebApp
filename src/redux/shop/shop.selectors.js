@@ -1,13 +1,5 @@
 import {createSelector} from 'reselect';
 
-const COLLECTION_ID_MAP = {
-    hats: 1,
-    sneakers: 2,
-    jackets: 3,
-    womens: 4,
-    mens: 5
-}
-
 const selectShop = (state) => state.shop;
 
 export const selectShopCollections = createSelector(
@@ -15,9 +7,18 @@ export const selectShopCollections = createSelector(
     (shop) => shop.collections
 );
 
+export const selectShopCollectionsForCollectionOverview = createSelector(
+    [selectShopCollections],
+    (collections) => Object.keys(collections).map((keysOfShopData) => collections[keysOfShopData])
+    //.map will return the new array
+    //.map will iterate through all objects(5 objects like hats,mens,womens,..) of shop data,
+    //and return the array of this five objects,so that collection overview component can loop through over this array
+);
+
 export const selectCollectionFromUrl = (collectionUrl) => createSelector(
     [selectShopCollections],
-    (collections) => collections.find((collection) => collection.id === COLLECTION_ID_MAP[collectionUrl])
+    (collections) => collections[collectionUrl]
 );
+
 
 

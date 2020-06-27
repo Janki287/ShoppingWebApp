@@ -35,7 +35,7 @@ const mapDispatchToProps = (dispatch) => ({
   addItem: (item) => dispatch(addItem(item)),
   removeItem: (item) => dispatch(removeItem(item)) 
 });
-//here we are triggering(setting the state) the clearItemFromCart(item) action from cart.actions.js
+//here we are triggering(setting the state) the clearItemFromCart(item),addItem(item),removeItem(item) action from cart.actions.js
 //that is why we are using mapDispatchToProps
 
 export default connect(null, mapDispatchToProps)(CheckoutItem);

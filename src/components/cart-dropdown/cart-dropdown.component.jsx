@@ -1,23 +1,31 @@
 import React from 'react';
-
 import './cart-dropdown.styles.scss';
 import CustomButton from '../custom-button/custom-button.component';
 import CartItem from '../cart-item/cart-item.component';
 
+import {withRouter} from 'react-router-dom';
+
 import { connect } from 'react-redux';
 
 import {selectCartItems} from '../../redux/cart/cart.selectors.js';
-
 import {createStructuredSelector} from 'reselect';
+import { toggleCartHidden } from '../../redux/cart/cart.action';
 
-const CartDropdown = ( { cartItems } ) => (
+const CartDropdown = ( { cartItems,history,dispatch } ) => (
+    //connect from react-redux give us the dispatch property,so that we don't have to write the mapDispatchToProps
+
     <div className='cart-dropdown'>
         <div className='cart-items'>
             {
+                cartItems.length ?
                 cartItems.map((cartItem) => <CartItem key={cartItem.id} cartItem={cartItem} />)
+                : <span className='empty-message'> Your Cart Is Empty </span>
             }
         </div>
-        <CustomButton>
+        <CustomButton onClick={() => {
+            history.push('/checkout');
+            dispatch(toggleCartHidden());
+        }}>
             GO TO CHECKOUT
         </CustomButton>
     </div>
@@ -27,4 +35,6 @@ const mapStateToProps = createStructuredSelector({
     cartItems: selectCartItems
 });
 
-export default connect(mapStateToProps)(CartDropdown);
+export default withRouter(connect(mapStateToProps)(CartDropdown));
+//dispatch(toggleCartHidden()) if we click on the GOTO CHECKOUT button then we are also firing the toggleCartHidden() action
+//it will toggle the cart-dropdown(give true value to hidden props)
